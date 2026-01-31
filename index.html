@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>СайтСотика — Стрим</title>
+
+    <style>
+        * { box-sizing: border-box; }
+        body {
+            margin: 0;
+            padding: 0;
+            background: #050608;
+            color: #e6e6e6;
+            font-family: "Segoe UI", system-ui, sans-serif;
+            overflow-x: hidden;
+        }
+        a { color: #e6e6e6; text-decoration: none; cursor: pointer; }
+
+        .gold-text { color: #d4af37; }
+        .gold-border { border: 1px solid rgba(212,175,55,0.45); }
+        .gold-underline { border-bottom: 2px solid #d4af37; }
+
+        .header {
+            width: 100%;
+            background: radial-gradient(circle at top, #151820 0, #050608 55%);
+            padding: 15px 0;
+            border-bottom: 1px solid rgba(212,175,55,0.3);
+            position: relative;
+            z-index: 50;
+        }
+        .header-frame {
+            width: 92%;
+            margin: auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            white-space: nowrap;
+            gap: 20px;
+        }
+        .logo-box {
+            padding: 10px 20px;
+            background: linear-gradient(135deg, rgba(212,175,55,0.18), rgba(0,0,0,0.7));
+            border-radius: 6px;
+        }
+        .logo {
+            font-size: 28px;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+        }
+        .ticker-box {
+            flex: 1;
+            overflow: hidden;
+            white-space: nowrap;
+            padding: 0 10px;
+        }
+        .ticker {
+            display: inline-block;
+            animation: tickerMove 18s linear infinite;
+            color: #00eaff;
+            font-size: 14px;
+            opacity: 0.85;
+        }
+        @keyframes tickerMove {
+            0% { transform: translateX(100%); }
+            100% { transform: translateX(-100%); }
+        }
+
+        .menu-box {
+            display: flex;
+            align-items: center;
+            gap: 25px;
+            padding: 10px 20px;
+            background: rgba(5, 8, 12, 0.96);
+            border-radius: 8px;
+            box-shadow: 0 0 18px rgba(0,0,0,0.7);
+            backdrop-filter: blur(6px);
+            position: relative;
+            z-index: 60;
+        }
+        .menu-box > a {
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+            opacity: 0.85;
+            transition: 0.18s ease;
+        }
+        .menu-box > a:hover {
+            opacity: 1;
+            color: #00eaff;
+        }
+
+        .stream-wrapper {
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+        }
+        #btn-stream {
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.16em;
+        }
+
+        .submenu-main {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            margin-top: 10px;
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            gap: 20px;
+            background: radial-gradient(circle at top, #151b24 0, #050608 60%);
+            padding: 10px 16px;
+            border: 1px solid #00eaff;
+            border-radius: 6px;
+            white-space: nowrap;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.18s ease;
+            box-shadow: 0 0 18px rgba(0,0,0,0.8);
+            z-index: 70;
+        }
+        .submenu-main.is-open {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        .submenu-main a {
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 0.14em;
+            opacity: 0.9;
+            transition: 0.16s ease;
+        }
+        .submenu-main a:hover {
+            color: #00eaff;
+            opacity: 1;
+        }
+
+        .widgets-wrapper {
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+        }
+        .submenu-widgets {
+            position: absolute;
+            top: 140%;
+            right: 0;
+            transform: translateX(-10px);
+            display: flex;
+            flex-direction: row-reverse;
+            gap: 18px;
+            background: radial-gradient(circle at top, #141922 0, #050608 70%);
+            padding: 10px 16px;
+            border: 1px solid #00eaff;
+            border-radius: 6px;
+            white-space: nowrap;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.18s ease;
+            box-shadow: 0 0 18px rgba(0,0,0,0.85);
+            z-index: 80;
+        }
+        .submenu-widgets.is-open {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        .submenu-widgets a {
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.16em;
+            opacity: 0.9;
+            transition: 0.16s ease;
+        }
+        .submenu-widgets a:hover {
+            color: #d4af37;
+            opacity: 1;
+        }
+
+        .overlay {
+            width: 100%;
+            padding: 40px 0 60px;
+            display: flex;
+            justify-content: center;
+        }
+        .overlay-inner {
+            width: 92%;
+            padding: 32px 40px 40px;
+            background: radial-gradient(circle at top, #151922 0, #050608 65%);
+            border-radius: 10px;
+            border: 1px solid rgba(0,234,255,0.25);
+            box-shadow: 0 0 26px rgba(0,0,0,0.9);
+        }
+        .overlay-title {
+            font-size: 30px;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 24px;
+            letter-spacing: 0.18em;
+            text-transform: uppercase;
+        }
+
+        .content-area {
+            width: 100%;
+            height: 650px;
+            position: relative;
+            background: radial-gradient(circle at top left, #151922 0, #050608 60%);
+            border-radius: 10px;
+            overflow: hidden;
+            border: 1px solid rgba(212,175,55,0.45);
+            box-shadow: 0 0 30px rgba(0,0,0,0.95);
+            z-index: 10;
+        }
+
+        #player-container {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 70%;
+            height: 100%;
+            transition: width 0.3s ease;
+        }
+        #chat-container {
+            position: absolute;
+            right: 0;
+            top: 0;
+            width: 30%;
+            height: 100%;
+            transition: width 0.3s ease;
+            border-left: 1px solid rgba(0,234,255,0.25);
+            background: rgba(3,5,8,0.9);
+        }
+        iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        #widgets-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 20;
+        }
+        .widget-box {
+            position: absolute;
+            background: radial-gradient(circle at top, rgba(10,18,28,0.96) 0, rgba(3,5,8,0.96) 60%);
+            padding: 14px 18px 16px;
+            border-radius: 10px;
+            border: 1px solid rgba(0,234,255,0.55);
+            box-shadow: 0 0 18px rgba(0,0,0,0.9), 0 0 22px rgba(0,234,255,0.25);
+            color: #e6e6e6;
+            pointer-events: auto;
+            font-size: 13px;
+            min-width: 260px;
+            max-width: 320px;
+            overflow: hidden;
+        }
+        .widget-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 6px;
+        }
+        .widget-title {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.18em;
+            color: #d4af37;
+            opacity: 0.95;
+        }
+        .widget-tag {
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.16em;
+            color: #00eaff;
+            opacity: 0.8;
+        }
+        .widget-main {
+            font-size: 15px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+        .widget-sub {
+            font-size: 11px;
+            opacity: 0.8;
+        }
+        .widget-bar {
+            margin-top: 8px;
+            width: 100%;
+            height: 5px;
+            border-radius: 999px;
+            background: rgba(255,255,255,0.06);
+            overflow: hidden;
+        }
+        .widget-bar-fill {
+            height: 100%;
+            border-radius: 999px;
+            background: linear-gradient(90deg, #d4af37, #00eaff);
+            width: 0%;
+            transition: width 0.4s ease;
+        }
+
+        #w-subs { top: 20px; left: 20px; }
+        #w-donates { top: 20px; right: 20px; }
+        #w-goal { top: 130px; left: 20px; }
+        #w-day { top: 130px; right: 20px; }
+        #w-month { bottom: 130px; left: 20px; }
+        #w-year { bottom: 130px; right: 130px; }
+        #w-history { bottom: 20px; left: 20px; }
+        #w-top { bottom: 20px; right: 20px; }
+
+        .btn-donate {
+            margin-top: 8px;
+            display: inline-block;
+            padding: 6px 12px;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.16em;
+            border-radius: 999px;
+            border: 1px solid #d4af37;
+            color: #050608;
+            background: linear-gradient(135deg, #d4af37, #ffea9a);
+            cursor: pointer;
+        }
+        .btn-donate:hover {
+            filter: brightness(1.05);
+        }
+    </style>
+</head>
+
+<body>
+
+<header class="header">
+    <div class="header-frame">
+
+        <div class="logo-box gold-border">
+            <div class="logo gold-text">СайтСотика</div>
+        </div>
+
+        <div class="ticker-box">
+            <div class="ticker">
+                Добро пожаловать на стрим СайтСотика • Скорость • Контроль • Точность • Симрейсинг без компромиссов
+            </div>
+        </div>
+
+        <nav class="menu-box gold-border">
+            <a href="#">Главная</a>
+            <a href="#">Обо мне</a>
+            <a href="#">Игры</a>
+
+            <span class="stream-wrapper">
+                <a class="gold-text gold-underline" id="btn-stream">Стрим</a>
+
+                <div class="submenu-main" id="submenu-main">
+                    <a id="btn-chat">Чат</a>
+                    <a id="btn-player">Плеер</a>
+
+                    <span class="widgets-wrapper">
+                        <a id="btn-widgets-toggle">Виджеты</a>
+
+                        <div class="submenu-widgets" id="submenu-widgets">
+                            <a data-widget="subs">Последние подписчики</a>
+                            <a data-widget="donates">Последние донаты</a>
+                            <a data-widget="history">История донатов</a>
+                            <a data-widget="top">Топ донат</a>
+                            <a data-widget="day">Донаты за день</a>
+                            <a data-widget="month">Донаты за месяц</a>
+                            <a data-widget="year">Донаты за год</a>
+                        </div>
+                    </span>
+                </div>
+            </span>
+
+            <a href="#">Команда</a>
+            <a href="#">Партнёры</a>
+        </nav>
+    </div>
+</header>
+
+<section>
+    <div class="overlay">
+        <div class="overlay-inner">
+
+            <div class="overlay-title gold-text">FSB Sotik</div>
+
+            <div class="content-area">
+
+                <div id="player-container">
+                    <iframe src="https://player.twitch.tv/?channel=fsbsotik&parent=localhost&parent=127.0.0.1&parent=sotikdima1975-star.github.io&autoplay=false"></iframe>
+
+                    <div id="widgets-overlay">
+
+                        <div class="widget-box" id="w-subs">
+                            <div class="widget-header">
+                                <div class="widget-title">Последние подписчики</div>
+                                <div class="widget-tag">subs</div>
+                            </div>
+                            <div class="widget-main" id="w-subs-main"></div>
+                            <div class="widget-sub" id="w-subs-sub"></div>
+                        </div>
+
+                        <div class="widget-box" id="w-donates">
+                            <div class="widget-header">
+                                <div class="widget-title">Последние донаты</div>
+                                <div class="widget-tag">donations</div>
+                            </div>
+                            <div class="widget-main" id="w-donates-main"></div>
+                            <div class="widget-sub" id="w-donates-sub"></div>
+                        </div>
+
+                        <div class="widget-box" id="w-goal">
+                            <div class="widget-header">
+                                <div class="widget-title">Цель стрима</div>
+                                <div class="widget-tag" id="w-goal-tag"></div>
+                            </div>
+                            <div class="widget-main" id="w-goal-main"></div>
+                            <div class="widget-sub" id="w-goal-sub"></div>
+                            <div class="widget-bar">
+                                <div class="widget-bar-fill" id="w-goal-bar"></div>
+                            </div>
+                            <button class="btn-donate" id="btn-donate">Донат</button>
+                        </div>
+
+                        <div class="widget-box" id="w-day">
+                            <div class="widget-header">
+                                <div class="widget-title">Донаты за день</div>
+                                <div class="widget-tag">today</div>
+                            </div>
+                            <div class="widget-main" id="w-day-main"></div>
+                            <div class="widget-sub" id="w-day-sub"></div>
+                        </div>
+
+                        <div class="widget-box" id="w-month">
+                            <div class="widget-header">
+                                <div class="widget-title">Донаты за месяц</div>
+                                <div class="widget-tag">month</div>
+                            </div>
+                            <div class="widget-main" id="w-month-main"></div>
+                            <div class="widget-sub" id="w-month-sub"></div>
+                        </div>
+
+                        <div class="widget-box" id="w-year">
+                            <div class="widget-header">
+                                <div class="widget-title">Донаты за год</div>
+                                <div class="widget-tag">year</div>
+                            </div>
+                            <div class="widget-main" id="w-year-main"></div>
+                            <div class="widget-sub" id="w-year-sub"></div>
+                        </div>
+
+                        <div class="widget-box" id="w-history">
+                            <div class="widget-header">
+                                <div class="widget-title">История донатов</div>
+                                <div class="widget-tag">history</div>
+                            </div>
+                            <div class="widget-main" id="w-history-main"></div>
+                            <div class="widget-sub" id="w-history-sub"></div>
+                        </div>
+
+                        <div class="widget-box" id="w-top">
+                            <div class="widget-header">
+                                <div class="widget-title">Топ донат</div>
+                                <div class="widget-tag">top</div>
+                            </div>
+                            <div class="widget-main" id="w-top-main"></div>
+                            <div class="widget-sub" id="w-top-sub"></div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <div id="chat-container">
+                    <iframe src="https://www.twitch.tv/embed/fsbsotik/chat?parent=localhost&parent=127.0.0.1&parent=sotikdima1975-star.github.io&darkpopout"></iframe>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const $ = (sel, scope = document) => scope.querySelector(sel);
+    const formatNumber = num => num.toLocaleString('ru-RU');
+
+    const btnStream = $('#btn-stream');
+    const submenuMain = $('#submenu-main');
+    const btnWidgetsToggle = $('#btn-widgets-toggle');
+    const submenuWidgets = $('#submenu-widgets');
+
+    if (btnStream && submenuMain) {
+        btnStream.addEventListener('click', (e) => {
+            e.stopPropagation();
+            submenuMain.classList.toggle('is-open');
+        });
+        document.addEventListener('click', (e) => {
+            if (!submenuMain.contains(e.target) && e.target !== btnStream) {
+                submenuMain.classList.remove('is-open');
+            }
+        });
+    }
+
+    if (btnWidgetsToggle && submenuWidgets) {
+        btnWidgetsToggle.addEventListener('click', (e) => {
+            e.stopPropagation();
+            submenuWidgets.classList.toggle('is-open');
+        });
+        document.addEventListener('click', (e) => {
+            if (!submenuWidgets.contains(e.target) && e.target !== btnWidgetsToggle) {
+                submenuWidgets.classList.remove('is-open');
+            }
+        });
+    }
+
+    const btnDonate = $('#btn-donate');
+    if (btnDonate) {
+        btnDonate.addEventListener('click', () => {
+            window.open('https://www.donationalerts.com/r/fsbsotik', '_blank');
+        });
+    }
+
+    const goalBar = $('#w-goal-bar');
+    const goalTag = $('#w-goal-tag');
+    const goalSub = $('#w-goal-sub');
+    const goalMain = $('#w-goal-main');
+
+    function renderGoal(goal) {
+        if (!goal) {
+            goalBar.style.width = '0%';
+            goalTag.textContent = '0% выполнено';
+            goalSub.textContent = 'Цель не задана';
+            goalMain.textContent = '';
+            return;
+        }
+        const raised = goal.raised_amount || 0;
+        const total = goal.goal_amount || 0;
+        const percent = total > 0 ? Math.min(Math.round((raised / total) * 100), 100) : 0;
+        goalBar.style.width = percent + '%';
+        goalTag.textContent = percent + '% выполнено';
+        goalSub.textContent = `Собрано: ${formatNumber(raised)}₽ / ${formatNumber(total)}₽`;
+        goalMain.textContent = goal.title || '';
+    }
+
+    async function loadGoal() {
+        try {
+            const res = await fetch('/api/goal');
+            const data = await res.json();
+            renderGoal(data.ok ? data.goal : null);
+        } catch {
+            renderGoal(null);
+        }
+    }
+
+    const dayMain = $('#w-day-main');
+    const daySub = $('#w-day-sub');
+    const monthMain = $('#w-month-main');
+    const monthSub = $('#w-month-sub');
+    const yearMain = $('#w-year-main');
+    const yearSub = $('#w-year-sub');
+
+    async function loadStats() {
+        try {
+            const res = await fetch('/api/stats');
+            const data = await res.json();
+            if (!data.ok) return;
+            if (dayMain) dayMain.textContent = `${formatNumber(data.day.sum)}₽`;
+            if (daySub) daySub.textContent = `${data.day.count} транзакций`;
+            if (monthMain) monthMain.textContent = `${formatNumber(data.month.sum)}₽`;
+            if (monthSub) monthSub.textContent = '';
+            if (yearMain) yearMain.textContent = `${formatNumber(data.year.sum)}₽`;
+            if (yearSub) yearSub.textContent = '';
+        } catch {}
+    }
+
+    const subsMain = $('#w-subs-main');
+    const subsSub = $('#w-subs-sub');
+    const donMain = $('#w-donates-main');
+    const donSub = $('#w-donates-sub');
+    const histMain = $('#w-history-main');
+    const histSub = $('#w-history-sub');
+    const topMain = $('#w-top-main');
+    const topSub = $('#w-top-sub');
+
+    let subsList = [];
+    let donsList = [];
+
+    async function loadSubs() {
+        try {
+            const res = await fetch('/api/subs/list');
+            const data = await res.json();
+            if (!data.ok || !Array.isArray(data.list)) {
+                subsList = [];
+                return;
+            }
+            subsList = data.list;
+        } catch {
+            subsList = [];
+        }
+    }
+
+    async function loadDonations() {
+        try {
+            const res = await fetch('/api/donations/list');
+            const data = await res.json();
+            if (!data.ok || !Array.isArray(data.list)) {
+                donsList = [];
+                return;
+            }
+            donsList = data.list;
+        } catch {
+            donsList = [];
+        }
+    }
+
+    function sliderFactory(listGetter, renderFn, interval = 4000) {
+        let idx = 0;
+        setInterval(() => {
+            const list = listGetter();
+            if (!list || list.length === 0) return;
+            idx = (idx + 1) % list.length;
+            renderFn(list[idx], idx, list.length);
+        }, interval);
+    }
+
+    function renderSubsItem(item, index, total) {
+        if (!subsMain || !subsSub) return;
+        if (!item) {
+            subsMain.textContent = 'Нет подписчиков';
+            subsSub.textContent = '';
+            return;
+        }
+        subsMain.textContent = item.username || 'Anon';
+        subsSub.textContent = `Подписка #${index + 1} из ${total}`;
+    }
+
+    function renderDonItem(item, index, total) {
+        if (!donMain || !donSub) return;
+        if (!item) {
+            donMain.textContent = 'Нет донатов';
+            donSub.textContent = '';
+            return;
+        }
+        donMain.textContent = `${item.username || 'Anon'}: +${formatNumber(item.amount || 0)}₽`;
+        donSub.textContent = item.message || `Донат #${index + 1} из ${total}`;
+    }
+
+    function renderHistoryItem(item, index, total) {
+        if (!histMain || !histSub) return;
+        if (!item) {
+            histMain.textContent = 'История пуста';
+            histSub.textContent = '';
+            return;
+        }
+        histMain.textContent = `${item.username || 'Anon'} — ${formatNumber(item.amount || 0)}₽`;
+        histSub.textContent = `#${index + 1} из ${total}`;
+    }
+
+    function renderTopItem() {
+        if (!topMain || !topSub) return;
+        if (!donsList || donsList.length === 0) {
+            topMain.textContent = 'Топ донат отсутствует';
+            topSub.textContent = '';
+            return;
+        }
+        const top = donsList.reduce((max, d) => (d.amount > max.amount ? d : max), donsList[0]);
+        topMain.textContent = `${top.username || 'Anon'} — ${formatNumber(top.amount || 0)}₽`;
+        topSub.textContent = top.message || '';
+    }
+
+    loadGoal();
+    loadStats();
+    loadSubs();
+    loadDonations();
+
+    setInterval(loadGoal, 30000);
+    setInterval(loadStats, 60000);
+    setInterval(loadSubs, 30000);
+    setInterval(loadDonations, 30000);
+
+    sliderFactory(() => subsList, renderSubsItem, 4000);
+    sliderFactory(() => donsList, renderDonItem, 4000);
+    sliderFactory(() => donsList, renderHistoryItem, 5000);
+    setInterval(renderTopItem, 5000);
+});
+</script>
+
+</body>
+</html>
