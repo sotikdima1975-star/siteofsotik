@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>СайтСотика — Портал Димы Сотика (FSB Sotik)</title>
+    <script>
+      // GitHub Pages SPA-редирект: сервер не знает frontend-роутов (/site, /donations, ...),
+      // на прямой заход он возвращает эту 404-страницу. Здесь мы сохраняем запрошенный
+      // путь и перезагружаемся на index.html, где приложение по sotik_spa_path
+      // открывает нужный раздел (сайт /site, донаты /donations, аукционы /auctions).
+      (function () {
+        var p = location.pathname; // напр. /siteofsotik/site
+        var base = '/siteofsotik';
+        if (p.indexOf(base) === 0) {
+          try { sessionStorage.setItem('sotik_spa_path', p); } catch (e) {}
+        }
+        location.replace(base + '/index.html');
+      })();
+    </script>
+  </head>
+  <body>
+  </body>
+</html>
